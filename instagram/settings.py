@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-_&k@($!wuf8757by6fw%(#1+3tcpahzjwmv=*w$0zt2*y!nkn0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -137,4 +137,4 @@ MEDIA_URL = '/media/' # 항상 / 로 끝나도록 설정
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 커스텀 유저 모델 사용
-AUTH_USER_MODEL = 'user.User'
+# AUTH_USER_MODEL = 'user.User'
