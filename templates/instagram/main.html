@@ -177,7 +177,7 @@
         background: rgba(0, 0, 0, 0.8);
         backdrop-filter: blur(1.5px);
         -webkit-backdrop-filter: blur(1.5px);
-  z-index: 2;
+        z-index: 2;
     }
 
 .modal_window {
@@ -241,7 +241,7 @@
              <span style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 400,'opsz' 24;" class="material-symbols-outlined">more_horiz</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item">게시글 수정</a></li>
+            <li><a class="dropdown-item" data-name="editFeed">게시글 수정</a></li>
             <li>
               <Hr class="dropdown-divider">
             </li>
@@ -438,6 +438,33 @@
       </div>
     </div>
   </div>
+<!-- 수정 모달 --->
+<div id="edit_modal" class="modal_overlay">
+  <div class="modal_window">
+    <div style="display: flex;flex-direction:row;justify-content:space-between">
+      <div style="width: 40px">
+      </div>
+      <div>
+        내용 수정
+      </div>
+      <div style="width: 40px">
+        <span id="modal_close_3" class="material-symbols-outlined">close</span>
+      </div>
+    </div>
+    <div style="border-top:solid 1px gray ;display: flex;flex-direction: row;margin-top:10px">
+      <div style="width: 400px;height: 530px">
+        <div style="display: flex;justify-content: center">
+          수정 전
+        </div>
+      </div>
+      <div style="width: 400px;height: 530px;border-left: solid 1px gray">
+        <div style="display: flex;justify-content: center">
+          수정후
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 
@@ -462,6 +489,7 @@
     let formData = {
       'feed_id': feedId
     };
+
     $.ajax({
       url: "/content/delete",
       type: "DELETE",
@@ -480,6 +508,24 @@
       }
     })
   })
+
+  $("li a[data-name='editFeed']").on('click', function () {
+
+    let feedId = $(this).parent().parent().parent().parent().parent().attr('data-feed-id');
+
+    $('#edit_modal').css({
+      display: 'flex'
+    });
+
+    $(document.body).css({
+      overflow: 'hidden'
+    });
+
+    $('document.navbar').css({
+      display: 'none'
+    });
+  })
+
       let files;
 
   $('#feed_create_button').click(function (){
@@ -489,7 +535,7 @@
       let image =files[0].name;
       let content =$('#input_feed_content').val();
       {#let user_id ="{{ user.nickname }}";#}
-      let user_id ="{{ user.username }}";
+      let user_id ="{{ user.nickname }}";
       let profile_image ="default_profile.png";
       let fd = new FormData();
 
@@ -570,13 +616,17 @@
       }
     }
 
-  $('#modal_close , #modal_close_2 ').click(function () {
+  $('#modal_close , #modal_close_2 , #modal_close_3 ').click(function () {
     $('#first_modal').css({
       display: 'none'
     });
     $('#second_modal').css({
       display: 'none'
     });
+    $('#edit_modal').css({
+      display: 'none'
+    });
+
     $('.image_upload_space').css({
       "background-image": "none",
       "background-color": "white"

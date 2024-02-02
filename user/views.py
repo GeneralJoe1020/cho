@@ -13,7 +13,7 @@ class Join(APIView):
     return render(request, "user/join.html")
 
   def post(self, request):
-    # todo 회원가입
+    #  todo 회원가입
     email = request.data.get('email', None)
     nickname = request.data.get('nickname', None)
     name = request.data.get('name', None)
@@ -35,21 +35,24 @@ class Login(APIView):
 
   def post(self, request):
     # todo 로그인
-    # email = request.data.get('email', None)
-    username = request.data.get('username', None)
+    email = request.data.get('email', None)
+    # username = request.data.get('username', None)
     password = request.data.get('password', None)
 
-    # user = User.objects.filter(email=email).first()
-    if not DefaultUser.objects.filter(username=username).exists():
+    if not User.objects.filter(email=email).exists():
       raise APIException("User not found.")
+    # if not User.objects.filter(username=username).exists():
+    #   raise APIException("User not found.")
 
-    user = DefaultUser.objects.get(username=username)
+    # user = DefaultUser.objects.get(username=username)
+    user = User.objects.get(email=email)
 
     if user is None:
       return Response(status=404, data=dict(message="회원정보가 잘못되었습니다."))
 
     if user.check_password(password):
-      request.session['username'] = username
+      # request.session['username'] = username
+      request.session['email'] = email
       return Response(status=200)
     else:
       return Response(status=400, data=dict(message="회원정보가 잘못되었습니다."))

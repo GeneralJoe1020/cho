@@ -9,4 +9,4 @@ class Feed(models.Model):
   profile_image = models.TextField()  # 프로필 이미지 표시
   user_id = models.TextField()        # 글쓴이 표시
   like_count = models.IntegerField()     # 좋아요 수 표시
-  user_key = models.ForeignKey(DefaultUser, on_delete=models.CASCADE)
+  user_key = models.ForeignKey(User, on_delete=models.CASCADE)

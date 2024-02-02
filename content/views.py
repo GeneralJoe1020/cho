@@ -5,30 +5,42 @@ from rest_framework.exceptions import APIException
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Feed
-from django.contrib.auth.models import User as DefaultUser
+# from django.contrib.auth.models import User as DefaultUser
 from uuid import uuid4
 import os
 from instagram.settings import MEDIA_ROOT
-from user.models import User
+# from user.models import User
+from .models import User
 
 
 class Main(APIView):
   def get(self, request):
     feed_list = Feed.objects.all().order_by('-id')  # select * from content_feed;
+    email = request.session.get('email', None)
+    # username = request.session.get('username', None)
 
-    username = request.session.get('username', None)
-
-    if username is None:
+    if email is None:
       return redirect("/user/login")
-
+    # if username is None:
+    #   return redirect("/user/login")
     user = None
-    if DefaultUser.objects.filter(username=username).exists():
-      user = DefaultUser.objects.get(username=username)
-      # raise APIException("User not found.")
+    if User.objects.filter(email=email).exists():
+      user = User.objects.get(email=email)
+      # raise APIException("user not found")
 
     if user is None:
       return redirect("/user/login")
+
     return render(request, "instagram/main.html", context=dict(feeds=feed_list, user=user))
+
+    # user = None
+    # if DefaultUser.objects.filter(username=username).exists():
+    #   user = DefaultUser.objects.get(username=username)
+    #   # raise APIException("User not found.")
+    #
+    # if user is None:
+    #   return redirect("/user/login")
+    # return render(request, "instagram/main.html", context=dict(feeds=feed_list, user=user))
 
 
 class UploadFeed(APIView):
@@ -45,13 +57,15 @@ class UploadFeed(APIView):
     # user_key = User.objects.get(nickname=user_id)
     image = uuid_name
     content = request.data.get('content')
-    username = request.data.get('user_id')
+    user_id = request.data.get('user_id')
     profile_image = request.data.get('profile_image')
 
-    if not DefaultUser.objects.filter(username=username).exists():
+    if not User.objects.filter(nickname=user_id).exists():
       raise APIException("User not found.")
-    user = DefaultUser.objects.get(username=username)
-    Feed.objects.create(image=image, content=content, user_id=username, profile_image=profile_image, user_key=user, like_count=0)
+
+    user = User.objects.get(nickname=user_id)
+
+    Feed.objects.create(image=image, content=content, user_id=user_id, profile_image=profile_image, user_key=user, like_count=0)
     # Feed.objects.create(image=image, content=content, user_id=user_id, profile_image=profile_image, like_count=0,
     #                     user_key=user_key)
     # context = {
@@ -68,7 +82,7 @@ class UploadFeed(APIView):
 class DeleteFeed(APIView):
   def delete(self, request):
     feed_id = request.data.get('feed_id')
-    current_username = request.session.get('username', None)
+    current_username = request.session.get('email', None)
     if current_username is None:
       raise APIException("No logged-in user.")
 
@@ -76,7 +90,7 @@ class DeleteFeed(APIView):
       raise APIException("Feed not found.")
     feed = Feed.objects.get(pk=feed_id)
     feed_user = feed.user_key
-    feed_username = feed_user.username
+    feed_username = feed_user.email
 
     if current_username != feed_username:
       raise APIException("게시글을 작성한 유저가 아니라 지울 수 없습니다.")
@@ -87,3 +101,7 @@ class DeleteFeed(APIView):
     #   return Response(status=400, data=dict(message="게시글을 작성한 유저가 아니라 지울 수 없습니다."))
     feed.delete()
     return Response(status=200)
+
+# class EditFeed(APIView):
+#   def edit(self,reqeust):
+

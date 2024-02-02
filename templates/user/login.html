@@ -41,13 +41,13 @@
  <script>
   $('#login_button').click(function (){
 
-  let username = $('#input_email').val();
+  let email = $('#input_email').val();
   let password = $('#input_password').val();
 
     $.ajax({
       url: "/user/login",
       data: {
-        username : username,
+        email : email,
         password : password,
       },
       method: "POST",
